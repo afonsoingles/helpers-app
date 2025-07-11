@@ -2,7 +2,7 @@
 
 # dependencies
 node_modules/
-
+pnpm-lock.yaml
 # Expo
 .expo/
 dist/
@@ -16,6 +16,7 @@ web-build/
 *.key
 *.mobileprovision
 *.env
+android
 # Metro
 .metro-health-check*
 
