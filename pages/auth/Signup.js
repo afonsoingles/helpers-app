@@ -8,11 +8,13 @@ import { useNavigation } from '@react-navigation/native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import ErrorMessage from '../../components/ErrorMessage';
-import { signIn } from '../../utils/AuthManager';
+import { signUp } from '../../utils/AuthManager';
 
-const LoginScreen = () => {
+const SignupScreen = () => {
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [displaynameInput, setDisplayNameInput] = useState('');
+  const [nameInput, setNameInput] = useState('');
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [fontsLoaded] = useFonts({
@@ -21,7 +23,7 @@ const LoginScreen = () => {
     RedHatDisplay_600SemiBold,
   });
 
-  
+
   const navigation = useNavigation();
   if (!fontsLoaded) return null;
 
@@ -29,26 +31,22 @@ const LoginScreen = () => {
   const processLogin = async () => {
     setIsButtonLoading(true);
     setErrorMessage('');
-    if (emailInput.trim() === '' || passwordInput.trim() === '') {
+    if (emailInput.trim() === '' || passwordInput.trim() === '' || displaynameInput.trim() === '') {
       setErrorMessage('Plase fill all the fields.');
       setIsButtonLoading(false);
       return;
     }
 
-    const signInResponse = await signIn(emailInput, passwordInput);
+    const signInResponse = await signUp(nameInput, emailInput, passwordInput, nameInput);
     if (signInResponse.status === 'success') {
       navigation.navigate('MainRoutes', { screen: 'Home' });
     } else {
       switch (signInResponse.type) {
         case 'invalid_credentials':
-          setErrorMessage('Email is invalid');
+          setErrorMessage('Credentials is invalid.');
           setTimeout(() => setErrorMessage(''), 5000);
           setIsButtonLoading(false);
           break;
-        case 'user_blocked':
-          setErrorMessage('This account has been suspended');
-          setTimeout(() => setErrorMessage(''), 5000);
-          setIsButtonLoading(false);
         default:
           setErrorMessage('Oh Uh! An unexpected error occurred. ['+signInResponse.type+']');
           setTimeout(() => setErrorMessage(''), 5000);
@@ -61,19 +59,19 @@ const LoginScreen = () => {
 
   return (
     <BackgroundWrapper>
-      <HeaderBig subtitle="Login" />
-
+      <HeaderBig subtitle="Signup" />
       <View style={styles.container}>
-
         <View style={styles.inputContainers}>
+          <InputBox placeholder='Display name' icon={require('../../assets/icons/bell.png')} onChangeText={(text) => setDisplayNameInput(text)} />
+          <InputBox placeholder='Username' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setNameInput(text)} />
           <InputBox placeholder='Email' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setEmailInput(text)} />
           <InputBox placeholder='Password' icon={require('../../assets/icons/key.png')} isPassword={true} onChangeText={(text) => setPasswordInput(text)} />
         </View>
         <View style={styles.submitButton}>
-          <Button 
+          <Button
             text={isButtonLoading ? "" : "Enter"}
-            onButtonClicked={() => !isButtonLoading && processLogin()} 
-            isLoading={isButtonLoading} 
+            onButtonClicked={() => !isButtonLoading && processLogin()}
+            isLoading={isButtonLoading}
             isButtonDisabled={isButtonLoading}
           />
         </View>
@@ -104,4 +102,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default LoginScreen;
+export default SignupScreen;

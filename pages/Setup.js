@@ -23,25 +23,22 @@ const Setup = ({ }) => {
     proccessAuthState(navigation);
   }, []);
 
-
-
   if (!fontsLoaded) return null;
-
-  const isButtonDisabled = !(1);
 
   return (
     <BackgroundWrapper>
       <View style={styles.container}>
-        <HeaderBig subtitle="Olá, bem-vindo!" />
+        <HeaderBig subtitle="Welcome!" style={{fontFamily: 'RedHatDisplay_800ExtraBold'}} />
         <View style={[styles.AlignBottom, { marginBottom: RFValue(15) }]}>
           <TouchableOpacity
             style={[buttonStyles.button]}
             disabled={false}
+            onPress={() => navigation.navigate('AuthRoutes', { screen: 'Signup' })}
           >
-            <Text style={[buttonStyles.buttonText]}>Criar conta</Text>
+            <Text style={[buttonStyles.buttonText]}>Sign up!</Text>
           </TouchableOpacity>
 
-          <View style={{ marginTop: RFValue(2) }} id="loginBottomSetup">
+          <View style={{ marginTop: RFValue(0) }} id="loginBottomSetup">
             <Text
               style={{
                 color: 'white',
@@ -50,20 +47,18 @@ const Setup = ({ }) => {
                 textAlign: 'center',
               }}
             >
-              Já tem conta? {' '}
+              Aready have an account? {' '}
               <Text
                 style={{ color: '#8c52ff', textDecorationLine: 'underline' }}
                 onPress={() => navigation.navigate('AuthRoutes', { screen: 'Login' })}
                 suppressHighlighting={true}
               >
-                Iniciar sessão
+                Log in
               </Text>
             </Text>
           </View>
 
         </View>
-
- 
       </View>
     </BackgroundWrapper>
   );
@@ -75,13 +70,14 @@ const styles = StyleSheet.create({
   },
   AlignBottom: {
     position: 'relative',
-    marginTop: Platform.OS === 'android' ? RFPercentage(65) : RFPercentage(25),
+    marginTop: Platform.OS === 'android' ? RFPercentage(60) : RFPercentage(20),
+    gap: 10
   },
 });
 
 const buttonStyles = StyleSheet.create({
   button: {
-    width: '90%',
+    width: '62%',
     height: RFValue(40),
     backgroundColor: '#8c52ff',
     justifyContent: 'center',

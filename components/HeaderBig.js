@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import HeaderImage from '../assets/logos/banner.png';
-import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
+import { RFValue } from 'react-native-responsive-fontsize';
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold } from '@expo-google-fonts/red-hat-display';
 
 const HeaderBig = ({ subtitle }) => {
@@ -17,9 +17,9 @@ const HeaderBig = ({ subtitle }) => {
         <View style={styles.container}>
             <Image 
                 source={HeaderImage} 
-                style={styles.image} 
+                style={styles.image}
             />
-            <Text style={styles.subtitle}>{subtitle}</Text>
+            <Text style={[styles.subtitle, { fontFamily: 'RedHatDisplay_700Bold' }]}>{subtitle}</Text>
         </View>
     );
 };

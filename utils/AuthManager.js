@@ -96,4 +96,4 @@ async function proccessAuthState(navigation) {
 
 
 
-export { signIn, getAccountData, proccessAuthState };
+export { signIn, getAccountData, proccessAuthState, signUp };

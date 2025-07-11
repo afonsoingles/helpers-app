@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../pages/auth/Login';
-
+import SignupScreen from '../pages/auth/Signup';
 import { useRoute } from '@react-navigation/native';
 const AuthStack = createStackNavigator();
 
@@ -25,11 +25,19 @@ function AuthRoutes() {
 
   return (
     <AuthStack.Navigator>
-      <AuthStack.Screen 
-        name="Login" 
-        component={LoginScreen} 
-        options={{ 
-          headerShown: false, 
+      <AuthStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          headerShown: false,
+          gestureEnabled: false
+        }}
+      />
+      <AuthStack.Screen
+        name="Signup"
+        component={SignupScreen}
+        options={{
+          headerShown: false,
           gestureEnabled: false
         }}
       />
