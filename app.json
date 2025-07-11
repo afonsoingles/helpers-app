@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "Helpers",
+    "slug": "Helpers",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logos/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/logos/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "assets/**/*"
+    ],
+
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/logos/icon.png",
+          "sounds": [
+            "./assets/sounds/bing.wav",
+            "./assets/sounds/sos.wav"
+          ]
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.afonsoingles.helpers",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
+        "NSUserNotificationUsageDescription": "This app uses notifications to keep you updated with important information."
+      },
+      "entitlements": {
+        "com.apple.developer.usernotifications.critical-alerts": true
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logos/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "dev.afonsoingles.helpers",
+      "googleServicesFile": "./assets/google.json"
+    },
+    "web": {
+      "favicon": "./assets/logos/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ca9cf3e8-2591-46ac-9921-657275e1a2cf"
+      }
+    },
+    "owner": "afonsoingles"
+  }
+}
