@@ -38,7 +38,7 @@ const SignupScreen = () => {
     }
 
     const signInResponse = await signUp(nameInput, displaynameInput, emailInput, passwordInput);
-    if (signInResponse.status === 'success') {
+    if (signInResponse.success === true) {
       navigation.navigate('MainRoutes', { screen: 'Home' });
     } else {
       switch (signInResponse.type) {

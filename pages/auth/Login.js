@@ -36,7 +36,7 @@ const LoginScreen = () => {
     }
 
     const signInResponse = await signIn(emailInput, passwordInput);
-    if (signInResponse.status === 'success') {
+    if (signInResponse.success === true) {
       navigation.navigate('MainRoutes', { screen: 'Home' });
     } else {
       switch (signInResponse.type) {
@@ -55,7 +55,7 @@ const LoginScreen = () => {
           setIsButtonLoading(false);
         break;
         default:
-          setErrorMessage('Oh Uh! An unexpected error occurred. ['+signInResponse.type+']');
+            setErrorMessage(`Oh Uh! An unexpected error occurred. [${JSON.stringify(signInResponse)}]`);
           setTimeout(() => setErrorMessage(''), 5000);
           setIsButtonLoading(false);
           break;
