@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import BackgroundWrapper from '../components/BackgroundWrapper';
 import HeaderBig from '../components/HeaderBig';
@@ -6,10 +6,11 @@ import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold, RedHatDisplay_300Light, RedHatDisplay_800ExtraBold } from '@expo-google-fonts/red-hat-display';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { account, proccessAuthState } from '../utils/AuthManager';
+import { getAccountData, proccessAuthState } from '../utils/AuthManager';
 
-const Setup = ({ }) => {
+const Home = ({ }) => {
 
+  const [userData, setUserData] = useState();
   const navigation = useNavigation();
   const [fontsLoaded] = useFonts({
     RedHatDisplay_400Regular,
@@ -19,12 +20,26 @@ const Setup = ({ }) => {
     RedHatDisplay_300Light,
   });
 
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+      const data = await getAccountData();
+      setUserData(data);
+      } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
   if (!fontsLoaded) return null;
+  if (!userData) return null;
 
   return (
     <BackgroundWrapper>
       <View style={styles.container}>
-        <HeaderBig subtitle={`Welcome ${getAccountData().name}`} style={{fontFamily: 'RedHatDisplay_800ExtraBold'}} />
+        <HeaderBig subtitle={`Welcome ${userData.name}`} style={{fontFamily: 'RedHatDisplay_800ExtraBold'}} />
         <View style={[styles.AlignBottom, { marginBottom: RFValue(15) }]}>
           <TouchableOpacity
             style={[buttonStyles.button]}
@@ -88,4 +103,4 @@ const buttonStyles = StyleSheet.create({
   },
 });
 
-export default Setup;
+export default Home;
