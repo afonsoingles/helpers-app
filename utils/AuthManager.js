@@ -26,6 +26,16 @@ async function signIn(email, password) {
     }
 }
 
+async function logOff() {
+    try {
+        AsyncStorage.clear('isLoggedIn');
+        AsyncStorage.clear('authToken');
+    } catch (error) {
+        console.error("[signIn] Unable to logoff: ", error.message);
+        throw error;
+    }
+}
+
 async function signUp(name, username, email, password) {
     try {
         const response = await axios.post(`${API_URL}/v2/accounts/signup`, {
@@ -98,4 +108,4 @@ async function proccessAuthState(navigation) {
 
 
 
-export { signIn, getAccountData, proccessAuthState, signUp };
+export { signIn, getAccountData, proccessAuthState, signUp, logOff };

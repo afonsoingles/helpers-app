@@ -6,7 +6,7 @@ import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold, RedHatDisplay_300Light, RedHatDisplay_800ExtraBold } from '@expo-google-fonts/red-hat-display';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { getAccountData, proccessAuthState } from '../utils/AuthManager';
+import { getAccountData, logOff } from '../utils/AuthManager';
 
 const Home = ({ }) => {
 
@@ -46,7 +46,7 @@ const Home = ({ }) => {
             disabled={false}
             onPress={() => navigation.navigate('AuthRoutes', { screen: 'Signup' })}
           >
-            <Text style={[buttonStyles.buttonText]}>Sign up!</Text>
+            <Text style={[buttonStyles.buttonText]}></Text>
           </TouchableOpacity>
 
           <View style={{ marginTop: RFValue(0) }} id="loginBottomSetup">
@@ -58,13 +58,16 @@ const Home = ({ }) => {
                 textAlign: 'center',
               }}
             >
-              Aready have an account? {' '}
+              Not your account? {' '}
               <Text
                 style={{ color: '#8c52ff', textDecorationLine: 'underline' }}
-                onPress={() => navigation.navigate('AuthRoutes', { screen: 'Login' })}
+                onPress={() => {
+                  logOff()
+                  navigation.navigate('MainRoutes', { screen: 'Setup' })}
+                }
                 suppressHighlighting={true}
               >
-                Log in
+                Log off!
               </Text>
             </Text>
           </View>
