@@ -31,13 +31,13 @@ const SignupScreen = () => {
   const processLogin = async () => {
     setIsButtonLoading(true);
     setErrorMessage('');
-    if (emailInput.trim() === '' || passwordInput.trim() === '' || displaynameInput.trim() === '') {
+    if (emailInput.trim() === '' || passwordInput.trim() === '' || displaynameInput.trim() === '' || nameInput.trim() === '') {
       setErrorMessage('Plase fill all the fields.');
       setIsButtonLoading(false);
       return;
     }
 
-    const signInResponse = await signUp(nameInput, emailInput, passwordInput, nameInput);
+    const signInResponse = await signUp(nameInput, displaynameInput, emailInput, passwordInput);
     if (signInResponse.status === 'success') {
       navigation.navigate('MainRoutes', { screen: 'Home' });
     } else {
@@ -46,6 +46,21 @@ const SignupScreen = () => {
           setErrorMessage('Credentials is invalid.');
           setTimeout(() => setErrorMessage(''), 5000);
           setIsButtonLoading(false);
+          break;
+          case 'missing_fields':
+            setErrorMessage('Plase fill all the fields.');
+            setTimeout(() => setErrorMessage(''), 5000);
+            setIsButtonLoading(false);
+          break;
+          case 'email_taken':
+            setErrorMessage('Theres another account with the same email.');
+            setTimeout(() => setErrorMessage(''), 5000);
+            setIsButtonLoading(false);
+          break;
+          case 'username_taken':
+            setErrorMessage('This username has been taken.');
+            setTimeout(() => setErrorMessage(''), 5000);
+            setIsButtonLoading(false);
           break;
         default:
           setErrorMessage('Oh Uh! An unexpected error occurred. ['+signInResponse.type+']');

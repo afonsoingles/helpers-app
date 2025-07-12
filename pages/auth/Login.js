@@ -41,7 +41,7 @@ const LoginScreen = () => {
     } else {
       switch (signInResponse.type) {
         case 'invalid_credentials':
-          setErrorMessage('Email is invalid');
+          setErrorMessage('Credentials is invalid');
           setTimeout(() => setErrorMessage(''), 5000);
           setIsButtonLoading(false);
           break;
@@ -49,6 +49,11 @@ const LoginScreen = () => {
           setErrorMessage('This account has been suspended');
           setTimeout(() => setErrorMessage(''), 5000);
           setIsButtonLoading(false);
+        case 'missing_fields':
+          setErrorMessage('Plase fill all the fields.');
+          setTimeout(() => setErrorMessage(''), 5000);
+          setIsButtonLoading(false);
+        break;
         default:
           setErrorMessage('Oh Uh! An unexpected error occurred. ['+signInResponse.type+']');
           setTimeout(() => setErrorMessage(''), 5000);

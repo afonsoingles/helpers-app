@@ -1,7 +1,6 @@
 import { API_URL } from '@env';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
 
 
 async function signIn(email, password) {
