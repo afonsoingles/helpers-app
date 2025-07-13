@@ -28,8 +28,7 @@ async function signIn(email, password) {
 
 async function logOff() {
     try {
-        AsyncStorage.clear('isLoggedIn');
-        AsyncStorage.clear('authToken');
+        AsyncStorage.clear()
     } catch (error) {
         console.error("[signIn] Unable to logoff: ", error.message);
         throw error;
@@ -60,6 +59,35 @@ async function signUp(name, username, email, password) {
     }
 
 }
+
+async function DeleteAccount(password) {
+    try {
+        const authToken = await AsyncStorage.getItem('authToken');
+        const response = await axios.delete(`${API_URL}/v2/accounts/delete`, {
+            data: {
+                password: password
+            },
+            headers: {
+                Authorization: `Bearer ${authToken}`
+            }
+        }).catch(error => {
+            const response = error.response;
+            return response;
+        });
+
+        if (response.status === 200) {
+            logOff()
+            return response.data;
+        } else {
+            return response.data;
+        }
+    } catch (error) {
+        console.error("[Delete Account] Unable to delete the account: ", error.message);
+        throw error;
+    }
+}
+
+
 async function getAccountData() {
     try {
         const authToken = await AsyncStorage.getItem('authToken');
@@ -84,7 +112,6 @@ async function proccessAuthState(navigation) {
     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
     const authToken = await AsyncStorage.getItem('authToken');
     console.log('[authState] Checking authentication state:', isLoggedIn);
-    console.log('[authState] Auth token:', authToken);
     if (isLoggedIn === 'true') {
         try {
             const accountData = await getAccountData();
@@ -108,4 +135,4 @@ async function proccessAuthState(navigation) {
 
 
 
-export { signIn, getAccountData, proccessAuthState, signUp, logOff };
+export { signIn, getAccountData, proccessAuthState, signUp, logOff, DeleteAccount };

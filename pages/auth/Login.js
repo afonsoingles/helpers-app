@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import BackgroundWrapper from '../../components/old/BackgroundWrapper';
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import HeaderBig from '../../components/HeaderBig';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold, RedHatDisplay_300Light } from '@expo-google-fonts/red-hat-display';
@@ -78,7 +78,7 @@ const LoginScreen = () => {
           <Button 
             text={isButtonLoading ? "" : "Enter"}
             onButtonClicked={() => !isButtonLoading && processLogin()} 
-            isLoading={isButtonLoading} 
+            isLoading={isButtonLoading}
             isButtonDisabled={isButtonLoading}
           />
         </View>

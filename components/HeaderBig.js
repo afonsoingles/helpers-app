@@ -15,8 +15,8 @@ const HeaderBig = ({ subtitle }) => {
 
     return (
         <View style={styles.container}>
-            <Image 
-                source={HeaderImage} 
+            <Image
+                source={HeaderImage}
                 style={styles.image}
             />
             <Text style={[styles.subtitle, { fontFamily: 'RedHatDisplay_700Bold' }]}>{subtitle}</Text>
@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
         
     },
     image: {
-        width: '100%', 
-        height: RFValue(110), 
+        width: '100%',
+        height: RFValue(110),
         resizeMode: 'contain',
         maxWidth: '95%',
     },
