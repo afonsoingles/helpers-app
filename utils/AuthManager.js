@@ -28,8 +28,7 @@ async function signIn(email, password) {
 
 async function logOff() {
     try {
-        AsyncStorage.clear('isLoggedIn');
-        AsyncStorage.clear('authToken');
+        AsyncStorage.clear()
     } catch (error) {
         console.error("[signIn] Unable to logoff: ", error.message);
         throw error;
@@ -60,6 +59,7 @@ async function signUp(name, username, email, password) {
     }
 
 }
+
 async function getAccountData() {
     try {
         const authToken = await AsyncStorage.getItem('authToken');

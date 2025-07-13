@@ -1,15 +1,26 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import BackgroundWrapper from '../components/BackgroundWrapper';
-import HeaderBig from '../components/HeaderBig';
-import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
-import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold, RedHatDisplay_300Light, RedHatDisplay_800ExtraBold } from '@expo-google-fonts/red-hat-display';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { getAccountData, logOff } from '../utils/AuthManager';
-
-const Home = ({ }) => {
-
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  Text,
+} from "react-native";
+import BackgroundWrapper from "../components/BackgroundWrapper";
+import HeaderBig from "../components/HeaderBig";
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {
+  useFonts,
+  RedHatDisplay_400Regular,
+  RedHatDisplay_700Bold,
+  RedHatDisplay_600SemiBold,
+  RedHatDisplay_300Light,
+  RedHatDisplay_800ExtraBold,
+} from "@expo-google-fonts/red-hat-display";
+import { useNavigation } from "@react-navigation/native";
+import { getAccountData } from "../utils/AuthManager";
+import { Alert, BackHandler } from "react-native";
+const Home = ({}) => {
   const [userData, setUserData] = useState();
   const navigation = useNavigation();
   const [fontsLoaded] = useFonts({
@@ -19,15 +30,40 @@ const Home = ({ }) => {
     RedHatDisplay_800ExtraBold,
     RedHatDisplay_300Light,
   });
+  React.useEffect(() => {
+    const onBackPress = () => {
+      Alert.alert(
+        "Exit Helpers",
+        "Do you want to exit?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {
+              // Do nothing
+            },
+            style: "cancel",
+          },
+          { text: "Yes", onPress: () => BackHandler.exitApp() },
+        ],
+        { cancelable: false }
+      );
 
-  
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      onBackPress
+    );
+
+    return () => backHandler.remove();
+  }, []);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-      const data = await getAccountData();
-      setUserData(data);
+        const data = await getAccountData();
+        setUserData(data);
       } catch (error) {
-      console.error('Failed to fetch user data:', error);
+        console.error("Failed to fetch user data:", error);
       }
     };
 
@@ -39,39 +75,22 @@ const Home = ({ }) => {
   return (
     <BackgroundWrapper>
       <View style={styles.container}>
-        <HeaderBig subtitle={`Welcome ${userData.name}`} style={{fontFamily: 'RedHatDisplay_800ExtraBold'}} />
+        <HeaderBig
+          subtitle={`Welcome ${userData.name}!`}
+          style={{ fontFamily: "RedHatDisplay_800ExtraBold" }}
+        />
         <View style={[styles.AlignBottom, { marginBottom: RFValue(15) }]}>
-          <TouchableOpacity
-            style={[buttonStyles.button]}
-            disabled={false}
-            onPress={() => navigation.navigate('AuthRoutes', { screen: 'Signup' })}
-          >
-            <Text style={[buttonStyles.buttonText]}></Text>
-          </TouchableOpacity>
-
-          <View style={{ marginTop: RFValue(0) }} id="loginBottomSetup">
-            <Text
-              style={{
-                color: 'white',
-                fontSize: RFValue(14),
-                fontFamily: 'RedHatDisplay_400Regular',
-                textAlign: 'center',
+          <View style={{ marginTop: RFValue(0) }}>
+            <TouchableOpacity
+              style={[buttonStyles.button]}
+              disabled={false}
+              onPress={() => {
+                navigation.navigate('MainRoutes', { screen: 'Settings' });
               }}
-            >
-              Not your account? {' '}
-              <Text
-                style={{ color: '#8c52ff', textDecorationLine: 'underline' }}
-                onPress={() => {
-                  logOff()
-                  navigation.navigate('MainRoutes', { screen: 'Setup' })}
-                }
-                suppressHighlighting={true}
-              >
-                Log off!
-              </Text>
-            </Text>
+             >
+              <Text style={[buttonStyles.buttonText]}>Settings</Text>
+            </TouchableOpacity>
           </View>
-
         </View>
       </View>
     </BackgroundWrapper>
@@ -83,26 +102,36 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   AlignBottom: {
-    position: 'relative',
-    marginTop: Platform.OS === 'android' ? RFPercentage(60) : RFPercentage(20),
-    gap: 10
+    position: "relative",
+    marginTop: Platform.OS === "android" ? RFPercentage(60) : RFPercentage(20),
+    gap: 10,
   },
 });
 
 const buttonStyles = StyleSheet.create({
   button: {
-    width: '62%',
+    width: "62%",
     height: RFValue(40),
-    backgroundColor: '#8c52ff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#8c52ff",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 11,
-    alignSelf: 'center',
+    alignSelf: "center",
+  },
+  image: {
+    width: "100%",
+    height: RFValue(110),
+    resizeMode: "contain",
+    maxWidth: "95%",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: RFValue(20),
-    fontFamily: 'RedHatDisplay_800ExtraBold',
+    fontFamily: "RedHatDisplay_800ExtraBold",
+  },
+  image: {
+    width: 10,
+    height: 10,
   },
 });
 
