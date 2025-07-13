@@ -20,6 +20,7 @@
     "axios": "^1.10.0",
     "expo": "~51.0.39",
     "expo-av": "~14.0.7",
+    "expo-background-task": "^0.2.8",
     "expo-dev-client": "~4.0.29",
     "expo-device": "~6.0.2",
     "expo-file-system": "~17.0.1",

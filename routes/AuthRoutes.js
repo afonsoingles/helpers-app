@@ -13,14 +13,12 @@ function AuthRoutes() {
 
   useEffect(() => {
     const backAction = () => {
-      if (route?.name === 'AuthRoutes' && route?.params.screen === 'SubmitVerification' || route?.params.screen === 'PendingApproval' && route.name === 'AuthRoutes') {
-        return true; 
+      if (route?.name === 'MainRoutes' && route?.params.screen === 'Setup' || route?.params.screen === 'PendingApproval' && route.name === 'AuthRoutes' ) {
+        return true;
       }
       return false;
     };
-
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
     return () => backHandler.remove();
   }, [route]);
 

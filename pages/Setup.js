@@ -4,9 +4,8 @@ import BackgroundWrapper from '../components/BackgroundWrapper';
 import HeaderBig from '../components/HeaderBig';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold, RedHatDisplay_300Light, RedHatDisplay_800ExtraBold } from '@expo-google-fonts/red-hat-display';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { account, proccessAuthState } from '../utils/AuthManager';
+import { proccessAuthState } from '../utils/AuthManager';
 
 const Setup = ({ }) => {
 

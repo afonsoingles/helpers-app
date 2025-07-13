@@ -33,8 +33,7 @@ const SettingsScreen = () => {
                 }
             }}
             isLoading={isButtonLoading}
-            isButtonDisabled={isButtonLoading}
-          />
+            isButtonDisabled={isButtonLoading}/>
         <Button
             text={isButtonLoading ? "" : "Delete Account"}
             onButtonClicked={() => {
@@ -43,8 +42,7 @@ const SettingsScreen = () => {
                 }
             }}
             isLoading={isButtonLoading}
-            isButtonDisabled={isButtonLoading}
-        />
+            isButtonDisabled={isButtonLoading}/>
         <Button
             text={isButtonLoading ? "" : "Go back"}
             onButtonClicked={() => {
@@ -54,8 +52,7 @@ const SettingsScreen = () => {
                 }
             }}
             isLoading={isButtonLoading}
-            isButtonDisabled={isButtonLoading}
-        />
+            isButtonDisabled={isButtonLoading}/>
         </View>
       </View>
     </BackgroundWrapper>

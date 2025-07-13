@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -19,7 +19,7 @@ import {
 } from "@expo-google-fonts/red-hat-display";
 import { useNavigation } from "@react-navigation/native";
 import { getAccountData } from "../utils/AuthManager";
-import { Alert, BackHandler } from "react-native";
+import { registerForPushNotificationsAsync } from "../utils/NotificationsManager";
 const Home = ({}) => {
   const [userData, setUserData] = useState();
   const navigation = useNavigation();
@@ -30,33 +30,7 @@ const Home = ({}) => {
     RedHatDisplay_800ExtraBold,
     RedHatDisplay_300Light,
   });
-  React.useEffect(() => {
-    const onBackPress = () => {
-      Alert.alert(
-        "Exit Helpers",
-        "Do you want to exit?",
-        [
-          {
-            text: "Cancel",
-            onPress: () => {
-              // Do nothing
-            },
-            style: "cancel",
-          },
-          { text: "Yes", onPress: () => BackHandler.exitApp() },
-        ],
-        { cancelable: false }
-      );
-
-      return true;
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      onBackPress
-    );
-
-    return () => backHandler.remove();
-  }, []);
+  registerForPushNotificationsAsync()
   useEffect(() => {
     const fetchUserData = async () => {
       try {

@@ -21,7 +21,7 @@ const LoginScreen = () => {
     RedHatDisplay_600SemiBold,
   });
 
-  
+
   const navigation = useNavigation();
   if (!fontsLoaded) return null;
 
