@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '85%',
     alignSelf: 'center',
-    gap: RFValue(15),
+    gap: RFValue(8),
   },
   submitButton: {
     marginTop: RFValue(35),
