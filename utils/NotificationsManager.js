@@ -54,23 +54,26 @@ async function registerForPushNotificationsAsync() {
         })
       ).data;
       const authToken = await AsyncStorage.getItem('authToken');
-      const addPhone = axios.post(`${API_URL}/v2/notifications/devices`, {
-        data: {
-            name: Device.modelName,
-            pushToken: pushTokenString,
-            platform: Device.osName,
-            allowsCritical: false
-        },
+      const addPhone = await axios.post(`${API_URL}/v2/notifications/devices`, {
+        name: Device.modelName,
+        pushToken: pushTokenString,
+        platform: Device.osName,
+        allowsCritical: false
+      }, {
         headers: {
-            Authorization: `Bearer ${authToken}`
+          authorization: `Bearer ${authToken}`
         }
-      })
+      });
       return addPhone.data;
-    } catch (e) {
-      handleRegistrationError(`${e}`);
-    }
-  } else {
-    handleRegistrationError('Must use physical device for push notifications');
+        } catch (e) {
+          const response = e.response;
+          if (response && response.data) {
+            if (response.data.type === 'duplicate_device') {
+              return
+            }
+          return;
+        }
+      }
   }
 }
 export { registerForPushNotificationsAsync }
