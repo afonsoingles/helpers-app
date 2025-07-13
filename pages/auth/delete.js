@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import HeaderBig from '../../components/HeaderBig';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
@@ -8,10 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import ErrorMessage from '../../components/ErrorMessage';
-import { signIn } from '../../utils/AuthManager';
+import { DeleteAccount } from '../../utils/AuthManager';
 
-const LoginScreen = () => {
-  const [emailInput, setEmailInput] = useState('');
+const DeleteScreen = () => {
   const [passwordInput, setPasswordInput] = useState('');
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -21,27 +20,24 @@ const LoginScreen = () => {
     RedHatDisplay_600SemiBold,
   });
 
-  
+
   const navigation = useNavigation();
   if (!fontsLoaded) return null;
-
-
-  const processLogin = async () => {
+  const processDeletion = async () => {
     setIsButtonLoading(true);
     setErrorMessage('');
-    if (emailInput.trim() === '' || passwordInput.trim() === '') {
+    if (passwordInput.trim() === '') {
       setErrorMessage('Plase fill all the fields.');
       setIsButtonLoading(false);
       return;
     }
-
-    const signInResponse = await signIn(emailInput, passwordInput);
-    if (signInResponse.success === true) {
-      navigation.navigate('MainRoutes', { screen: 'Home' });
+    const DeleteResponse = await DeleteAccount(passwordInput);
+    if (DeleteResponse.success === true) {
+      navigation.navigate('MainRoutes', { screen: 'Setup' });
     } else {
-      switch (signInResponse.type) {
-        case 'invalid_credentials':
-          setErrorMessage('Credentials is invalid');
+      switch (DeleteResponse.type) {
+        case 'invalid_password':
+          setErrorMessage('The password is invalid');
           setTimeout(() => setErrorMessage(''), 5000);
           setIsButtonLoading(false);
           break;
@@ -55,7 +51,7 @@ const LoginScreen = () => {
           setIsButtonLoading(false);
         break;
         default:
-            setErrorMessage(`Oh Uh! An unexpected error occurred. [${JSON.stringify(signInResponse)}]`);
+            setErrorMessage(`Oh Uh! An unexpected error occurred. [${JSON.stringify(DeleteResponse)}]`);
           setTimeout(() => setErrorMessage(''), 5000);
           setIsButtonLoading(false);
           break;
@@ -63,21 +59,36 @@ const LoginScreen = () => {
 
     }
   };
+  const StartDeletion = async () => {
+    Alert.alert(
+        "Delete account",
+        "Do you want to delete the account?",
+        [
+          {
+            text: "No",
+            onPress: () => setIsButtonLoading(false),
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: processDeletion,
+          },
+        ],
+        { cancelable: false }
+      );
+  }
 
   return (
     <BackgroundWrapper>
-      <HeaderBig subtitle="Login" />
-
+      <HeaderBig subtitle="Delete Account" />
       <View style={styles.container}>
-
         <View style={styles.inputContainers}>
-          <InputBox placeholder='Email' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setEmailInput(text)} />
           <InputBox placeholder='Password' icon={require('../../assets/icons/key.png')} isPassword={true} onChangeText={(text) => setPasswordInput(text)} />
         </View>
         <View style={styles.submitButton}>
           <Button 
-            text={isButtonLoading ? "" : "Enter"}
-            onButtonClicked={() => !isButtonLoading && processLogin()} 
+            text={isButtonLoading ? "" : "Delete"}
+            onButtonClicked={() => !isButtonLoading && StartDeletion()}
             isLoading={isButtonLoading}
             isButtonDisabled={isButtonLoading}
           />
@@ -109,4 +120,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default LoginScreen;
+export default DeleteScreen;

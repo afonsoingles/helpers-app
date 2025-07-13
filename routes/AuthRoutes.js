@@ -3,6 +3,7 @@ import { BackHandler } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../pages/auth/Login';
 import SignupScreen from '../pages/auth/Signup';
+import DeleteScreen from '../pages/auth/delete';
 import { useRoute } from '@react-navigation/native';
 const AuthStack = createStackNavigator();
 
@@ -36,6 +37,14 @@ function AuthRoutes() {
       <AuthStack.Screen
         name="Signup"
         component={SignupScreen}
+        options={{
+          headerShown: false,
+          gestureEnabled: false
+        }}
+      />
+      <AuthStack.Screen
+        name="Delete"
+        component={DeleteScreen}
         options={{
           headerShown: false,
           gestureEnabled: false

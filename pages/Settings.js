@@ -36,6 +36,16 @@ const SettingsScreen = () => {
             isButtonDisabled={isButtonLoading}
           />
         <Button
+            text={isButtonLoading ? "" : "Delete Account"}
+            onButtonClicked={() => {
+                if (!isButtonLoading) {
+                    navigation.navigate('AuthRoutes', { screen: 'Delete' });
+                }
+            }}
+            isLoading={isButtonLoading}
+            isButtonDisabled={isButtonLoading}
+        />
+        <Button
             text={isButtonLoading ? "" : "Go back"}
             onButtonClicked={() => {
                 if (!isButtonLoading) {
