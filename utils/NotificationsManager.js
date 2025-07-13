@@ -53,7 +53,6 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-      console.log(pushTokenString)
       const authToken = await AsyncStorage.getItem('authToken');
       const addPhone = await axios.post(`${API_URL}/v2/notifications/devices`, {
         name: Device.modelName,
