@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         fontFamily: 'RedHatDisplay_400Regular',
     },
     optionButton: {
-        backgroundColor: '#8C52FF',
+        backgroundColor: '#53A7FF',
         borderRadius: 30,
         marginLeft: 'auto',
         marginRight: '2%',
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#5e3ba3',
     },
     optionButtonDenied: {
-        backgroundColor: '#8C52FF',
+        backgroundColor: '#53A7FF',
     },
     optionButtonText: {
         fontSize: RFValue(12),

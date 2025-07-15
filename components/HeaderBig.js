@@ -32,13 +32,13 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: RFValue(110),
+        height: RFValue(130),
         resizeMode: 'contain',
         maxWidth: '95%',
     },
     subtitle: {
         marginTop: RFValue(10), // Added margin top for spacing
-        fontSize: RFValue(20), // Adjusted font size for better readability
+        fontSize: RFValue(25), // Adjusted font size for better readability
         color: '#fff',
         fontFamily: 'RedHatDisplay_600SemiBold',
         textAlign: 'center', // Centered the text

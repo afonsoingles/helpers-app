@@ -24,7 +24,7 @@ const buttonStyles = StyleSheet.create({
     button: {
       width: '100%',
       height: RFValue(40),
-      backgroundColor: '#8C52FF',
+      backgroundColor: '#53A7FF',
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 11,
@@ -32,7 +32,7 @@ const buttonStyles = StyleSheet.create({
     },
     disabledButton: {
       color: '#A3A3A3',
-      backgroundColor: '#6D3CCF',
+      backgroundColor: '#366ba3',
     },
     buttonText: {
       color: '#fff',

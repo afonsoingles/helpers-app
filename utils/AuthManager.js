@@ -118,12 +118,12 @@ async function getAccountData() {
 
 async function proccessAuthState(navigation) {
   const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
-  const authToken = await AsyncStorage.getItem("authToken");
   console.log("[authState] Checking authentication state:", isLoggedIn);
   if (isLoggedIn === "true") {
     try {
       const accountData = await getAccountData();
       if (accountData.status === "suspended") {
+        console.log("suspended!")
         navigation.navigate("AuthRoutes", {
           screen: "Suspended",
           params: { accountData },

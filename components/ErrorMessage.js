@@ -1,10 +1,9 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Text } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { ActivityIndicator } from 'react-native';
 
 const ErrorMessage = ({ text, isVisible }) => {
-    
+
     if (!isVisible) {
         return null;
     }
