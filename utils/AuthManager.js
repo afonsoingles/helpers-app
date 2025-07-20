@@ -29,7 +29,8 @@ async function signIn(email, password) {
 
 async function logOff() {
   try {
-    AsyncStorage.clear();
+    AsyncStorage.removeItem('isLoggedIn');
+    AsyncStorage.removeItem('authToken');
   } catch (error) {
     console.error("[signIn] Unable to logoff: ", error.message);
     throw error;
