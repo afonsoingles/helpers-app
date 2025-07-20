@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import HeaderImage from '../assets/logos/banner.png';
-import { RFValue } from 'react-native-responsive-fontsize';
+import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold } from '@expo-google-fonts/red-hat-display';
 
 const HeaderBig = ({ subtitle }) => {
@@ -25,8 +25,9 @@ const HeaderBig = ({ subtitle }) => {
 };
 const styles = StyleSheet.create({
     container: {
+        marginTop: RFPercentage(3),
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'top',
         flex: 1,
         
     },
@@ -37,11 +38,11 @@ const styles = StyleSheet.create({
         maxWidth: '95%',
     },
     subtitle: {
-        marginTop: RFValue(10), // Added margin top for spacing
-        fontSize: RFValue(25), // Adjusted font size for better readability
+        marginTop: RFValue(-20),
+        fontSize: RFValue(25),
         color: '#fff',
         fontFamily: 'RedHatDisplay_600SemiBold',
-        textAlign: 'center', // Centered the text
+        textAlign: 'center', 
 
     },
 });

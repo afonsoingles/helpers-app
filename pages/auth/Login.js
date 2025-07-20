@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import ErrorMessage from '../../components/ErrorMessage';
-import { signIn } from '../../utils/AuthManager';
+import { proccessAuthState, signIn } from '../../utils/AuthManager';
 
 const LoginScreen = () => {
   const [emailInput, setEmailInput] = useState('');
@@ -37,7 +37,7 @@ const LoginScreen = () => {
 
     const signInResponse = await signIn(emailInput, passwordInput);
     if (signInResponse.success === true) {
-      navigation.navigate('MainRoutes', { screen: 'Home' });
+      proccessAuthState(navigation)
     } else {
       switch (signInResponse.type) {
         case 'invalid_credentials':
