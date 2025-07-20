@@ -6,6 +6,7 @@ import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold, RedHatDisplay_300Light, RedHatDisplay_800ExtraBold } from '@expo-google-fonts/red-hat-display';
 import { useNavigation } from '@react-navigation/native';
 import { proccessAuthState } from '../utils/AuthManager';
+import Button from '../components/Button';
 
 const Setup = ({ }) => {
 
@@ -29,13 +30,9 @@ const Setup = ({ }) => {
       <View style={styles.container}>
         <HeaderBig subtitle="Welcome!" style={{fontFamily: 'RedHatDisplay_800ExtraBold'}} />
         <View style={[styles.AlignBottom, { marginBottom: RFValue(15) }]}>
-          <TouchableOpacity
-            style={[buttonStyles.button]}
-            disabled={false}
-            onPress={() => navigation.navigate('AuthRoutes', { screen: 'Signup' })}
-          >
-            <Text style={[buttonStyles.buttonText]}>Sign up!</Text>
-          </TouchableOpacity>
+          <View style={{ width: '80%', alignSelf: 'center' }}>
+            <Button text={"Sign up"}/>
+          </View>
 
           <View style={{ marginTop: RFValue(0) }} id="loginBottomSetup">
             <Text
@@ -74,21 +71,5 @@ const styles = StyleSheet.create({
   },
 });
 
-const buttonStyles = StyleSheet.create({
-  button: {
-    width: '62%',
-    height: RFValue(40),
-    backgroundColor: '#53A7FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 11,
-    alignSelf: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: RFValue(20),
-    fontFamily: 'RedHatDisplay_800ExtraBold',
-  },
-});
 
 export default Setup;
