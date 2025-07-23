@@ -27,12 +27,10 @@ const styles = StyleSheet.create({
     container: {
         marginTop: RFPercentage(3),
         alignItems: 'center',
-        justifyContent: 'top',
-        flex: 1,
         
     },
     image: {
-        width: '100%',
+        width: '95%',
         height: RFValue(130),
         resizeMode: 'contain',
         maxWidth: '95%',
