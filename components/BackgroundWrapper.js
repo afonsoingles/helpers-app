@@ -6,11 +6,10 @@ const BackgroundWrapper = ({ children }) => {
   const backgroundColor = '#211e1e'; 
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={[styles.container, { backgroundColor }]}>
       {children}
       <StatusBar backgroundColor={backgroundColor} />
-    </View>
+    </ScrollView>
   );
 };
 
