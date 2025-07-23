@@ -65,11 +65,10 @@ const LoginScreen = () => {
   };
 
   return (
+    
     <BackgroundWrapper>
       <HeaderBig subtitle="Login" />
-
-      <View style={styles.container}>
-
+      <View>
         <View style={styles.inputContainers}>
           <InputBox placeholder='Email' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setEmailInput(text)} />
           <InputBox placeholder='Password' icon={require('../../assets/icons/key.png')} isPassword={true} onChangeText={(text) => setPasswordInput(text)} />
@@ -91,11 +90,9 @@ const LoginScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+
   inputContainers: {
-    marginTop: RFValue(30),
+    marginTop: RFPercentage(5),
     alignItems: 'center',
     width: '85%',
     alignSelf: 'center',

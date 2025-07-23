@@ -32,7 +32,7 @@ const SuspendedScreen = ({ route }) => {
       <HeaderBig subtitle="Account Suspended" />
       <View style={styles.container}>
         <View style={styles.AlignCenter}>
-          <Text style={[styles.text, { fontFamily: 'RedHatDisplay_700Bold', marginBottom: RFValue(20)}, styles.textAlignLeft]}>
+          <Text style={[styles.text, { fontFamily: 'RedHatDisplay_700Bold', marginBottom: RFValue(15)}, styles.textAlignLeft]}>
             Dear {accountData.name},
           </Text>
           <Text style={[styles.text, styles.textAlignLeft]}>
@@ -54,13 +54,12 @@ const SuspendedScreen = ({ route }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    marginTop: RFPercentage(3),
+    marginTop: RFPercentage(5),
     flex: 1,
     justifyContent: 'flex-start',
   },
   AlignCenter: {
     alignItems: 'center',
-    marginTop: RFPercentage(-20),
   },
   text: {
     fontSize: RFValue(16),

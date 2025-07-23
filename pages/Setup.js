@@ -31,7 +31,7 @@ const Setup = ({ }) => {
         <HeaderBig subtitle="Welcome!" style={{fontFamily: 'RedHatDisplay_800ExtraBold'}} />
         <View style={[styles.AlignBottom, { marginBottom: RFValue(15) }]}>
           <View style={{ width: '80%', alignSelf: 'center' }}>
-            <Button text={"Sign up"}/>
+            <Button text={"Sign up"} onButtonClicked={() => navigation.navigate('AuthRoutes', { screen: 'Signup' })}/>
           </View>
 
           <View style={{ marginTop: RFValue(0) }} id="loginBottomSetup">
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   AlignBottom: {
     position: 'relative',
-    marginTop: Platform.OS === 'android' ? RFPercentage(60) : RFPercentage(20),
+    marginTop: Platform.OS === 'android' ? RFPercentage(67) : RFPercentage(20),
     gap: 10
   },
 });

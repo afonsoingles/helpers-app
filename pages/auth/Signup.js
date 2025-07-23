@@ -75,7 +75,7 @@ const SignupScreen = () => {
   return (
     <BackgroundWrapper>
       <HeaderBig subtitle="Signup" />
-      <View style={styles.container}>
+      <View>
         <View style={styles.inputContainers}>
           <InputBox placeholder='Display name' icon={require('../../assets/icons/bell.png')} onChangeText={(text) => setDisplayNameInput(text)} />
           <InputBox placeholder='Username' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setNameInput(text)} />
@@ -99,11 +99,8 @@ const SignupScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   inputContainers: {
-    marginTop: RFValue(30),
+    marginTop: RFPercentage(5),
     alignItems: 'center',
     width: '85%',
     alignSelf: 'center',
