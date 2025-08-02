@@ -64,6 +64,7 @@ async function registerForPushNotificationsAsync() {
           authorization: `Bearer ${authToken}`
         }
       });
+      await AsyncStorage.setItem('deviceID', addPhone.data.deviceId);
       return addPhone.data;
         } catch (e) {
           const response = e.response;
