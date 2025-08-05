@@ -6,7 +6,6 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { useFonts, RedHatDisplay_400Regular, RedHatDisplay_700Bold, RedHatDisplay_600SemiBold, RedHatDisplay_300Light, RedHatDisplay_800ExtraBold } from "@expo-google-fonts/red-hat-display";
 import { useNavigation } from "@react-navigation/native";
 import { getAccountData } from "../utils/AuthManager";
-import { registerForPushNotificationsAsync } from "../utils/NotificationsManager";
 import NavigationBar from "../components/NavigationBar";
 
 const Home = ({}) => {
@@ -19,7 +18,8 @@ const Home = ({}) => {
     RedHatDisplay_800ExtraBold,
     RedHatDisplay_300Light,
   });
-  registerForPushNotificationsAsync()
+
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -32,8 +32,7 @@ const Home = ({}) => {
 
     fetchUserData();
   }, []);
-  if (!fontsLoaded) return null;
-  if (!userData) return null;
+  if (!fontsLoaded || !userData) return null;
 
   return (
     <BackgroundWrapper>
