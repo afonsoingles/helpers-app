@@ -51,8 +51,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   AlignBottom: {
-    position: "relative",
-    marginTop: Platform.OS === "android" ? RFPercentage(70) : RFPercentage(20),
+    position: "absolute",
+    bottom: "2%",
+    width: "100%",
     gap: 10,
   },
 });
