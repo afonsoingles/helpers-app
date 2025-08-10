@@ -1,8 +1,4 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import Setup from '../pages/Setup';
-import Login from '../pages/auth/Login';
 import { useNavigation } from '@react-navigation/native';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

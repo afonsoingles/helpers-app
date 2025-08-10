@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import HeaderBig from '../../components/HeaderBig';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';

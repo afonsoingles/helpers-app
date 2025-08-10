@@ -123,12 +123,19 @@ async function proccessAuthState(navigation) {
   if (isLoggedIn === "true") {
     try {
       const accountData = await getAccountData();
+      const authToken = await AsyncStorage.getItem("authToken");
+      const deviceID = await AsyncStorage.getItem("deviceID");
       if (accountData.status === "suspended") {
         console.log("suspended!")
         navigation.navigate("AuthRoutes", {
           screen: "Suspended",
           params: { accountData },
         });
+        await axios.post(`${API_URL}/v2/notifications/devices/${deviceID}/checkIn`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
         return;
       }
       navigation.navigate("MainRoutes", { screen: "Home" });
