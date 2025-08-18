@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../pages/auth/Login';
 import SignupScreen from '../pages/auth/Signup';
 import DeleteScreen from '../pages/auth/delete';
-import SuspendedScreen from '../pages/auth/Suspended';
+import SuspendedScreen from '../pages/auth/suspended';
 
 import { useRoute } from '@react-navigation/native';
 const AuthStack = createStackNavigator();

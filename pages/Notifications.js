@@ -26,7 +26,7 @@ import {
 import NavigationBar from "../components/NavigationBar";
 import LinearGradient from "react-native-linear-gradient";
 import NotificationContainer from "../components/NotificationContainer";
-import NotificationBox from "../components/NotificationBox";
+import { setupPushConfig } from "../utils/NotificationsManager";
 
 const Notifications = () => {
   const [userData, setUserData] = useState();
@@ -93,8 +93,9 @@ const Notifications = () => {
 
   if (!fontsLoaded || !userData || !notificationStatus) return null;
 
-  /*
+
     if (notificationStatus === "requireSetup") {
+      setupPushConfig();
       return (
         <BackgroundWrapper>
           <View style={styles.container}>
@@ -109,7 +110,7 @@ const Notifications = () => {
         </BackgroundWrapper>
       );
     }
-  */
+
 
   return (
     <BackgroundWrapper>

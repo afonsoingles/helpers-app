@@ -89,7 +89,7 @@ async function setupPushConfig() {
       return "error";
     }
   } catch (error) {
-    console.error("Failed to setup push configuration:", error);
+    console.error("Failed to setup push configuration:", error.response.data);
     return "error";
   }
 
