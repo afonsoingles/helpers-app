@@ -9,8 +9,8 @@ const NavigationBar = ({ tab, userInfo }) => {
 
     const icons = [
         { name: 'home', path: require('../assets/icons/home.png'), screen: 'Home' },
+        { name: 'helpers', path: require('../assets/icons/wrench.png'), screen: 'Helpers' },
         { name: 'notifications', path: require('../assets/icons/bell.png'), screen: 'Notifications' },
-        { name: 'services', path: require('../assets/icons/wrench.png'), screen: 'Services' },
         { name: 'settings', path: require('../assets/icons/settings.png'), screen: 'Settings' },
     ];
 
