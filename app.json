@@ -32,9 +32,11 @@
       "bundleIdentifier": "dev.afonsoingles.helpers",
       "infoPlist": {
         "UIBackgroundModes": [
+          "remote-notification",
           "remote-notification"
         ],
-        "NSUserNotificationUsageDescription": "This app uses notifications to keep you updated with important information."
+        "NSUserNotificationUsageDescription": "This app uses notifications to keep you updated with important information.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
         "com.apple.developer.usernotifications.critical-alerts": true

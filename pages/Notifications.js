@@ -17,16 +17,16 @@ import {
   RedHatDisplay_300Light,
   RedHatDisplay_800ExtraBold
 } from "@expo-google-fonts/red-hat-display";
-import { useNavigation } from "@react-navigation/native";
 import { getAccountData } from "../utils/AuthManager";
 import {
   loadUserNotifications,
-  getNotificationDeviceStatus
+  getNotificationDeviceStatus,
+  checkInDevice
 } from "../utils/NotificationsManager";
 import NavigationBar from "../components/NavigationBar";
 import LinearGradient from "react-native-linear-gradient";
 import NotificationContainer from "../components/NotificationContainer";
-import { setupPushConfig } from "../utils/NotificationsManager";
+import PushNotificationSetup from "../components/PushNotificationSetup";
 
 const Notifications = () => {
   const [userData, setUserData] = useState();
@@ -37,6 +37,9 @@ const Notifications = () => {
   const [notificationStatus, setNotificationStatus] = useState("ready");
   const [showTopFade, setShowTopFade] = useState(false);
   const [showBottomFade, setShowBottomFade] = useState(true);
+  const [isPushSetup, setIsPushSetup] = useState(false);
+  const [checkInInterval, setCheckInInterval] = useState(null);
+  const [isCheckingNotificationStatus, setIsCheckingNotificationStatus] = useState(true);
 
 
   const [fontsLoaded] = useFonts({
@@ -65,18 +68,73 @@ const Notifications = () => {
 
   useEffect(() => {
     const loadData = async () => {
-
+      setIsCheckingNotificationStatus(true);
+      
       const userData = await getAccountData();
       setUserData(userData);
 
       const notificationStatus = await getNotificationDeviceStatus();
       setNotificationStatus(notificationStatus);
+      console.log("notificationStatus", notificationStatus);
+      // Check if push notifications are properly set up
+      const pushSetup = notificationStatus === "ok";
+      console.log("pushSetup", pushSetup);
+      setIsPushSetup(pushSetup);
+      
+      setIsCheckingNotificationStatus(false);
     };
-
 
     loadData();
     fetchNotifications();
   }, []);
+
+  // Background check-in functionality
+  useEffect(() => {
+    const startCheckIn = () => {
+      // Clear any existing interval
+      if (checkInInterval) {
+        clearInterval(checkInInterval);
+      }
+
+      // Set up new interval for check-in every 10 minutes
+      const interval = setInterval(async () => {
+        try {
+          await checkInDevice();
+        } catch (error) {
+          console.log('Background check-in error:', error);
+        }
+      }, 10 * 60 * 1000); // 10 minutes
+
+      setCheckInInterval(interval);
+    };
+
+    // Start check-in if push notifications are set up
+    if (isPushSetup) {
+      startCheckIn();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (checkInInterval) {
+        clearInterval(checkInInterval);
+      }
+    };
+  }, [isPushSetup]);
+
+  const handlePushSetupComplete = async (success) => {
+    if (success) {
+      // Immediately update the state to show notification list
+      setIsPushSetup(true);
+      setNotificationStatus("ok");
+      
+      // Refresh user data to get updated push configuration
+      const updatedUserData = await getAccountData();
+      setUserData(updatedUserData);
+      
+      // Load notifications immediately
+      fetchNotifications();
+    }
+  };
 
   const handleScroll = ({ nativeEvent }) => {
     const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
@@ -93,23 +151,37 @@ const Notifications = () => {
 
   if (!fontsLoaded || !userData || !notificationStatus) return null;
 
-
-    if (notificationStatus === "requireSetup") {
-      setupPushConfig();
-      return (
-        <BackgroundWrapper>
-          <View style={styles.container}>
-            <HeaderBig subtitle="Notifications" />
-            <View style={styles.setupContainer}>
-              <Text style={styles.setupText}>
-                heyo! it seems like you need to setup push config :O. i still need to implement this :C
-              </Text>
-              
-            </View>
+  // Show loading while checking notification status
+  if (isCheckingNotificationStatus) {
+    return (
+      <BackgroundWrapper>
+        <View style={styles.container}>
+          <HeaderBig subtitle="Notifications" />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#fff" />
           </View>
-        </BackgroundWrapper>
-      );
-    }
+          <View style={[styles.AlignBottom, { paddingHorizontal: RFValue(20) }]}>
+            <NavigationBar tab="notifications" userInfo={userData || null} />
+          </View>
+        </View>
+      </BackgroundWrapper>
+    );
+  }
+
+  // Show push notification setup if not configured
+  if (!isPushSetup) {
+    return (
+      <BackgroundWrapper>
+        <View style={styles.container}>
+          <HeaderBig subtitle="Notifications" />
+          <PushNotificationSetup onSetupComplete={handlePushSetupComplete} />
+          <View style={[styles.AlignBottom, { paddingHorizontal: RFValue(20) }]}>
+            <NavigationBar tab="notifications" userInfo={userData || null} />
+          </View>
+        </View>
+      </BackgroundWrapper>
+    );
+  }
 
 
   return (
@@ -123,14 +195,20 @@ const Notifications = () => {
             onScroll={handleScroll}
             scrollEventThrottle={16}
           >
-            {notifications.map((notification, index) => (
-              <NotificationContainer
-                key={index}
-                title={notification.title}
-                body={notification.body}
-                critical={notification.isCritical}
-              />
-            ))}
+            {notifications.length === 0 && !loading ? (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>There are no notifications, yet!</Text>
+              </View>
+            ) : (
+              notifications.map((notification, index) => (
+                <NotificationContainer
+                  key={index}
+                  title={notification.title}
+                  body={notification.body}
+                  critical={notification.isCritical}
+                />
+              ))
+            )}
             {loading && (
               <View style={{ alignItems: "center", marginVertical: 10 }}>
                 <ActivityIndicator size="large" color="#fff" />
@@ -204,6 +282,33 @@ const styles = StyleSheet.create({
     right: 0,
     height: RFValue(30),
     zIndex: 2
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: RFValue(20)
+  },
+  loadingText: {
+    fontSize: RFValue(16),
+    fontFamily: 'RedHatDisplay_400Regular',
+    color: '#e0e0e0',
+    marginTop: RFValue(15),
+    textAlign: 'center'
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: RFValue(60),
+    paddingHorizontal: RFValue(20)
+  },
+  emptyText: {
+    fontSize: RFValue(18),
+    fontFamily: 'RedHatDisplay_400Regular',
+    color: '#a0a0a0',
+    textAlign: 'center',
+    lineHeight: RFValue(26)
   }
 });
 

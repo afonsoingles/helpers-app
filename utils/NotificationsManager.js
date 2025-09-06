@@ -20,25 +20,10 @@ Notifications.setNotificationHandler({
 async function setupPushConfig() {
 
   const notificationPermissionStatus = await Notifications.getPermissionsAsync();
-  if (notificationPermissionStatus.status === 'denied') {
+  if (notificationPermissionStatus.status !== 'granted') {
     return "manualAuthorizationRequired";
   }
   
-  if (notificationPermissionStatus.status === 'undertermined') {
-    const permissionResponse = await Notifications.requestPermissionsAsync({
-      ios: {
-        allowAlert: true,
-        allowBadge: true,
-        allowSound: true,
-        allowAnnouncements: true,
-        allowCriticalAlerts: true,
-      },
-    });
-
-    if (permissionResponse.status !== 'granted') {
-      return "manualAuthorizationRequired";
-    }
-  }
 
   Notifications.setNotificationChannelAsync('default', {
     name: 'Default',
@@ -84,17 +69,34 @@ async function setupPushConfig() {
       }
     });
 
-    if (ApiResponse.status !== 200) {
-      console.log("Unable to register device: ", ApiResponse.data);
-      return "error";
-    }
+    AsyncStorage.setItem('notificationDeviceToken', pushToken.data);
+    AsyncStorage.setItem('notificationDeviceId', ApiResponse.data.deviceId)
   } catch (error) {
-    console.error("Failed to setup push configuration:", error.response.data);
-    return "error";
+    if (error.response?.data?.type === 'duplicate_device') {
+      console.log("Device already registered, fetching device ID from account data");
+      // Device already exists, get the device ID from user's account data
+      const userData = await getAccountData();
+      const pushConfiguration = userData?.pushConfiguration || [];
+      
+      // Find the device with matching push token
+      const existingDevice = pushConfiguration.find(
+        (config) => config.pushToken === pushToken.data
+      );
+      
+      if (existingDevice) {
+        AsyncStorage.setItem('notificationDeviceToken', pushToken.data);
+        AsyncStorage.setItem('notificationDeviceId', existingDevice.deviceId);
+        AsyncStorage.setItem('notificationDeviceStatus', 'ok');
+      } else {
+        console.log("Could not find device in account data");
+        return "error";
+      }
+    } else {
+     return "error";
+    }
   }
 
-  AsyncStorage.setItem('notificationDeviceToken', pushToken.data);
-  AsyncStorage.setItem('notificationDeviceId', ApiResponse.data.deviceId)
+  
 
   return "ok";
 }
@@ -178,7 +180,7 @@ async function registerToken(token) {
     return "error";
   }
 
-  AsyncStorage.setItem('notificationDeviceToken', pushToken.data);
+  AsyncStorage.setItem('notificationDeviceToken', token);
   AsyncStorage.setItem('notificationDeviceId', ApiResponse.data.deviceId);
 }
 
@@ -186,14 +188,15 @@ async function getNotificationDeviceStatus() {
   const notificationDeviceId = await AsyncStorage.getItem('notificationDeviceId');
 
   if (!notificationDeviceId) {
-    return "requireSetup"
+    return setupPushConfig();
   }
 
   const realDeviceToken = await Notifications.getExpoPushTokenAsync();
   const registeredDeviceToken = await AsyncStorage.getItem('notificationDeviceToken');
-  if (realDeviceToken !== registeredDeviceToken) {
-    await updatePushConfig();
-    return "ok";
+  if (realDeviceToken.data !== registeredDeviceToken) {
+    console.log(realDeviceToken)
+    console.log(registeredDeviceToken)
+    return "tokenMismatch";
   }
 
   const userData = await getAccountData();
@@ -204,7 +207,6 @@ async function getNotificationDeviceStatus() {
   );
 
   if (!isTokenRegistered) { // handle when admin removes token in admin dash
-    registerToken(realDeviceToken.data);
     return "tokenNotRegistered";
   }
   
@@ -212,6 +214,59 @@ async function getNotificationDeviceStatus() {
 }
 
 
-// check in. remove push config.
+// Device check-in functionality
+async function checkInDevice() {
+  const authToken = await AsyncStorage.getItem('authToken');
+  const deviceId = await AsyncStorage.getItem('notificationDeviceId');
+  
+  if (!authToken || !deviceId) {
+    console.log('Check-in failed: Missing auth token or device ID');
+    return false;
+  }
 
-export { setupPushConfig, loadUserNotifications, getNotificationDeviceStatus, updatePushConfig, registerToken };
+  try {
+    const response = await axios.post(`${API_URL}/v2/notifications/devices/${deviceId}/checkIn`, {}, {
+      headers: {
+        authorization: `Bearer ${authToken}`
+      }
+    });
+    
+    if (response.data.success) {
+      console.log('Device check-in successful');
+      return true;
+    }
+  } catch (error) {
+    console.log('Device check-in failed:', error.response?.data?.message || error.message);
+  }
+  
+  return false;
+}
+
+
+// Request push notification permissions
+async function requestPushPermissions() {
+  try {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    
+    return finalStatus === 'granted';
+  } catch (error) {
+    console.log('Error requesting push permissions:', error);
+    return false;
+  }
+}
+
+export { 
+  setupPushConfig, 
+  loadUserNotifications, 
+  getNotificationDeviceStatus, 
+  updatePushConfig, 
+  registerToken,
+  checkInDevice,
+  requestPushPermissions
+};
