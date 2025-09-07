@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert
 } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import BackgroundWrapper from "../components/BackgroundWrapper";
 import HeaderBig from "../components/HeaderBig";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
@@ -29,6 +30,7 @@ import LinearGradient from "react-native-linear-gradient";
 import HelperCard from "../components/HelperCard";
 
 const Helpers = () => {
+  const navigation = useNavigation();
   const [userData, setUserData] = useState();
   const [helpers, setHelpers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -205,9 +207,15 @@ const Helpers = () => {
               </View>
             ) : !helpers || helpers.length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No helpers configured yet!</Text>
+                <Text style={styles.emptyText}>You don't have any helpers</Text>
                 <Text style={styles.emptySubtext}>
-                  Add helpers from the gallery to get started with automations.
+                  You can add more helpers by visiting the{' '}
+                  <Text 
+                    style={styles.galleryLink}
+                    onPress={() => navigation.navigate('HelpersGallery')}
+                  >
+                    gallery
+                  </Text>
                 </Text>
               </View>
             ) : (
@@ -223,6 +231,17 @@ const Helpers = () => {
                     error={helperErrors[helper.id] || null}
                   />
                 ))}
+                <View style={styles.galleryLinkContainer}>
+                  <Text style={styles.galleryLinkText}>
+                    You can add more helpers by visiting the{' '}
+                    <Text 
+                      style={styles.galleryLink}
+                      onPress={() => navigation.navigate('HelpersGallery')}
+                    >
+                      gallery
+                    </Text>
+                  </Text>
+                </View>
               </View>
             )}
           </ScrollView>
@@ -254,7 +273,7 @@ const Helpers = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   AlignBottom: {
     position: "absolute",
@@ -303,7 +322,23 @@ const styles = StyleSheet.create({
     fontFamily: 'RedHatDisplay_400Regular',
     color: '#a0a0a0',
     textAlign: 'center',
-    lineHeight: RFValue(20)
+    lineHeight: RFValue(20),
+  },
+  galleryLink: {
+    color: '#2196F3',
+    textDecorationLine: 'underline',
+    fontFamily: 'RedHatDisplay_600SemiBold',
+  },
+  galleryLinkContainer: {
+    marginTop: RFValue(20),
+    paddingVertical: RFValue(16),
+    alignItems: 'center',
+  },
+  galleryLinkText: {
+    fontSize: RFValue(14),
+    fontFamily: 'RedHatDisplay_400Regular',
+    color: '#a0a0a0',
+    textAlign: 'center',
   },
   topFade: {
     position: "absolute",

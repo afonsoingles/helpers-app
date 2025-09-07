@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import SettingsScreen from '../pages/Settings';
 import Notifications from '../pages/Notifications';
 import Helpers from '../pages/Helpers';
+import HelpersGallery from '../pages/HelpersGallery';
 
 const Stack = createStackNavigator();
 
@@ -13,7 +14,8 @@ const MainRoutes = () => {
     <Stack.Navigator>
       <Stack.Screen name="Setup" component={Setup} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-      <Stack.Screen name="Helpers" component={Helpers} options={{ headerShown: false }} />
+        <Stack.Screen name="Helpers" component={Helpers} options={{ headerShown: false }} />
+        <Stack.Screen name="HelpersGallery" component={HelpersGallery} options={{ headerShown: false }} />
       <Stack.Screen name="Notifications" component={Notifications} options={{ headerShown: false }} />
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
     </Stack.Navigator>

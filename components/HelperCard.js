@@ -203,7 +203,11 @@ const HelperCard = ({ helper, onToggle, onDelete, onEdit, isLoading, error }) =>
                 style={styles.infoModalCloseButton}
                 onPress={() => setShowInfoModal(false)}
               >
-                <Text style={styles.infoModalCloseText}>✕</Text>
+                <Image 
+                  source={require('../assets/icons/close.png')} 
+                  style={styles.closeIcon}
+                  resizeMode="contain"
+                />
               </TouchableOpacity>
             </View>
             
@@ -266,7 +270,11 @@ const HelperCard = ({ helper, onToggle, onDelete, onEdit, isLoading, error }) =>
                 style={styles.deleteModalCloseButton}
                 onPress={() => setShowActionModal(false)}
               >
-                <Text style={styles.deleteModalCloseText}>✕</Text>
+                <Image 
+                  source={require('../assets/icons/close.png')} 
+                  style={styles.closeIcon}
+                  resizeMode="contain"
+                />
               </TouchableOpacity>
             </View>
             
@@ -511,12 +519,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  infoModalCloseText: {
-    fontSize: RFValue(16),
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    lineHeight: RFValue(16),
+  closeIcon: {
+    width: RFValue(16),
+    height: RFValue(16),
   },
   infoModalContent: {
     padding: RFValue(20),
@@ -588,13 +593,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#444',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  deleteModalCloseText: {
-    fontSize: RFValue(16),
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    lineHeight: RFValue(16),
   },
   deleteModalContent: {
     padding: RFValue(20),

@@ -145,12 +145,45 @@ function formatParameters(params) {
   return paramStrings.join(', ');
 }
 
+async function installHelper(helperId, params, schedule) {
+  try {
+    const authToken = await AsyncStorage.getItem("authToken");
+    if (!authToken) {
+      throw new Error("User is not authenticated");
+    }
+
+    const response = await axios.post(
+      `${API_URL}/v2/helpers`,
+      {
+        id: helperId,
+        params: params || {},
+        schedule: schedule || []
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      return "ok";
+    } else {
+      return "error";
+    }
+  } catch (error) {
+    console.error("Error installing helper:", error);
+    return "error";
+  }
+}
+
 export {
   getAvailableHelpers,
   registerHelper,
   updateHelper,
   unregisterHelper,
   getUserActiveHelpers,
+  installHelper,
   formatSchedule,
   formatParameters
 };
