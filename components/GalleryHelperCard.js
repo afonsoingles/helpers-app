@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image } fr
 import { RFValue } from 'react-native-responsive-fontsize';
 import GalleryHelperInstallModal from './GalleryHelperInstallModal';
 
-const GalleryHelperCard = ({ helper, onInstall, isInstalling, isInstalled, installedHelper }) => {
+const GalleryHelperCard = ({ helper, onInstall, isInstalling, isInstalled, installedHelper, errorMessage }) => {
   const [showInstallModal, setShowInstallModal] = useState(false);
 
   const handleInstallPress = () => {
@@ -62,30 +62,30 @@ const GalleryHelperCard = ({ helper, onInstall, isInstalling, isInstalled, insta
         </Text>
       )}
 
-      {/* Admin Configuration Warning */}
       {helper.require_admin_activation && (
         <View style={styles.adminConfigContainer}>
-          <Text style={styles.adminConfigText}>
-            ⚠️ Needs admin configuration
-          </Text>
+          <Text style={styles.adminConfigText}>Needs admin configuration</Text>
         </View>
       )}
 
       {/* Features */}
       <View style={styles.featuresContainer}>
         {helper.params && Object.keys(helper.params).length > 0 && (
-          <View style={styles.featureItem}>
-            <Text style={styles.featureText}>📝 Configurable parameters</Text>
+          <View style={styles.featureItemRow}>
+            <Image source={require('../assets/icons/equalizer.png')} style={styles.featureIcon} />
+            <Text style={styles.featureText}>Supports custom parameters</Text>
           </View>
         )}
         {helper.allow_execution_time_config && (
-          <View style={styles.featureItem}>
-            <Text style={styles.featureText}>⏰ Custom schedule</Text>
+          <View style={styles.featureItemRow}>
+            <Image source={require('../assets/icons/clock.png')} style={styles.featureIcon} />
+            <Text style={styles.featureText}>Custom schedule</Text>
           </View>
         )}
         {helper.boot_run && (
-          <View style={styles.featureItem}>
-            <Text style={styles.featureText}>🚀 Runs on startup</Text>
+          <View style={styles.featureItemRow}>
+            <Image source={require('../assets/icons/shuttle.png')} style={styles.featureIcon} />
+            <Text style={styles.featureText}>Runs at startup</Text>
           </View>
         )}
       </View>
@@ -95,7 +95,7 @@ const GalleryHelperCard = ({ helper, onInstall, isInstalling, isInstalled, insta
         {isInstalled ? (
           <View style={styles.installedContainer}>
             <Text style={styles.installedText}>
-              {installedHelper?.enabled ? '✓ Installed and Active' : '✓ Installed (Paused)'}
+              {installedHelper?.enabled ? '✓ Active' : '✓ Paused'}
             </Text>
           </View>
         ) : (
@@ -121,6 +121,13 @@ const GalleryHelperCard = ({ helper, onInstall, isInstalling, isInstalled, insta
         )}
       </View>
 
+      {/* Error under card */}
+      {errorMessage ? (
+        <View style={styles.inlineErrorContainer}>
+          <Text style={styles.inlineErrorText}>{errorMessage}</Text>
+        </View>
+      ) : null}
+
       {/* Install Modal */}
       <GalleryHelperInstallModal
         visible={showInstallModal}
@@ -128,6 +135,7 @@ const GalleryHelperCard = ({ helper, onInstall, isInstalling, isInstalled, insta
         onClose={() => setShowInstallModal(false)}
         onInstall={handleInstall}
         isLoading={isInstalling}
+        isInstalling={isInstalling}
       />
     </View>
   );
@@ -207,9 +215,17 @@ const styles = StyleSheet.create({
   },
   featuresContainer: {
     marginBottom: RFValue(16),
+    gap: RFValue(6),
   },
-  featureItem: {
-    marginBottom: RFValue(4),
+  featureItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: RFValue(8),
+  },
+  featureIcon: {
+    width: RFValue(14),
+    height: RFValue(14),
+    tintColor: '#aaa',
   },
   featureText: {
     fontSize: RFValue(12),
@@ -249,6 +265,20 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     fontFamily: 'RedHatDisplay_600SemiBold',
     color: '#fff',
+  },
+  inlineErrorContainer: {
+    marginTop: RFValue(10),
+    backgroundColor: '#4a1f1f',
+    borderColor: '#ff6b6b',
+    borderWidth: 1,
+    borderRadius: RFValue(8),
+    paddingHorizontal: RFValue(10),
+    paddingVertical: RFValue(8),
+  },
+  inlineErrorText: {
+    color: '#ff9b9b',
+    fontSize: RFValue(12),
+    fontFamily: 'RedHatDisplay_400Regular',
   },
 });
 

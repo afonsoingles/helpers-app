@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Image, Platform } from 'react-native';
 import { RFValue, RFPercentage } from 'react-native-responsive-fontsize';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackgroundWrapper from '../components/BackgroundWrapper';
 import HeaderBig from '../components/HeaderBig';
 import NavigationBar from '../components/NavigationBar';
@@ -16,6 +16,7 @@ const HelpersGallery = () => {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [installingHelpers, setInstallingHelpers] = useState({});
+  const [helperErrors, setHelperErrors] = useState({});
   const [error, setError] = useState(null);
   const [showTopFade, setShowTopFade] = useState(false);
   const [showBottomFade, setShowBottomFade] = useState(true);
@@ -23,6 +24,13 @@ const HelpersGallery = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Reload data when screen comes into focus (e.g., when back button is pressed)
+  useFocusEffect(
+    React.useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {
@@ -36,7 +44,32 @@ const HelpersGallery = () => {
       ]);
       
       setUserData(userDataResult);
-      setHelpers(availableHelpers || []);
+
+      const userRegion = userDataResult?.region || null;
+      const userInstalledIds = new Set(
+        (userDataResult?.services || []).map(s => s?.id).filter(Boolean)
+      );
+
+      const filtered = (availableHelpers || []).filter(helper => {
+        if (!helper) return false;
+        if (helper.admin_only === true) return false;
+        if (userInstalledIds.has(helper.id)) return false;
+
+        const regionLock = helper.region_lock;
+        if (!regionLock || regionLock === '*' || (Array.isArray(regionLock) && regionLock.includes('*'))) {
+          return true;
+        }
+        if (!userRegion) return false;
+        if (typeof regionLock === 'string') {
+          return regionLock === userRegion;
+        }
+        if (Array.isArray(regionLock)) {
+          return regionLock.includes(userRegion);
+        }
+        return true;
+      });
+
+      setHelpers(filtered);
     } catch (err) {
       console.error('Error loading gallery data:', err);
       setError('Failed to load helpers gallery');
@@ -48,6 +81,7 @@ const HelpersGallery = () => {
   const handleInstallHelper = async (helperId, params, schedule) => {
     try {
       setInstallingHelpers(prev => ({ ...prev, [helperId]: true }));
+      setHelperErrors(prev => ({ ...prev, [helperId]: null }));
       
       const result = await installHelper(helperId, params, schedule);
       
@@ -63,7 +97,7 @@ const HelpersGallery = () => {
       }
     } catch (err) {
       console.error('Error installing helper:', err);
-      setError(`Failed to install helper: ${err.message}`);
+      setHelperErrors(prev => ({ ...prev, [helperId]: `Failed to install: ${err.message}` }));
     } finally {
       setInstallingHelpers(prev => ({ ...prev, [helperId]: false }));
     }
@@ -82,20 +116,23 @@ const HelpersGallery = () => {
   const handleScroll = ({ nativeEvent }) => {
     const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
 
-    const shouldShowTopFade = contentOffset.y > 0.1;
-    const isAtBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height;
-    const shouldShowBottomFade = !isAtBottom;
+    // Recalculate fade conditions with improved logic
+    const contentExceedsScreen = contentSize.height > layoutMeasurement.height + 1; // Added buffer for iOS
+    const isAtBottom = contentOffset.y >= contentSize.height - layoutMeasurement.height - 1; // Adjusted threshold
 
-    console.log('Gallery Scroll:', { 
-      contentOffset: contentOffset.y, 
-      shouldShowTopFade, 
-      shouldShowBottomFade,
-      contentSize: contentSize.height,
-      layoutMeasurement: layoutMeasurement.height
+    console.log('Scroll Debug:', {
+      platform: Platform.OS,
+      layoutHeight: layoutMeasurement.height,
+      contentHeight: contentSize.height,
+      contentOffsetY: contentOffset.y,
+      contentExceedsScreen,
+      isAtBottom,
+      topFadeCondition: contentOffset.y > 0.1,
+      bottomFadeCondition: contentExceedsScreen && !isAtBottom,
     });
 
-    setShowTopFade(shouldShowTopFade);
-    setShowBottomFade(shouldShowBottomFade);
+    setShowTopFade(contentOffset.y > 0.1);
+    setShowBottomFade(contentExceedsScreen && !isAtBottom);
   };
 
   if (loading) {
@@ -142,12 +179,13 @@ const HelpersGallery = () => {
         <View style={{ flex: 1 }}>
           <ScrollView
             style={styles.galleryView}
+            contentContainerStyle={styles.galleryViewContent}
             onScroll={handleScroll}
             scrollEventThrottle={16}
           >
             {helpers.length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No helpers available in the gallery</Text>
+                <Text style={styles.emptyText}>No helpers available, sorry!</Text>
               </View>
             ) : (
               helpers.map((helper, index) => (
@@ -158,6 +196,7 @@ const HelpersGallery = () => {
                   isInstalling={installingHelpers[helper.id] || false}
                   isInstalled={isHelperInstalled(helper.id)}
                   installedHelper={getInstalledHelper(helper.id)}
+                  errorMessage={helperErrors[helper.id]}
                 />
               ))
             )}
@@ -165,19 +204,14 @@ const HelpersGallery = () => {
 
           {/* Fades */}
           {console.log('Gallery Fade States:', { showTopFade, showBottomFade })}
+          {/* Temporarily disable LinearGradient for debugging */}
           {showTopFade && (
-            <LinearGradient
-              colors={["#211e1e", "transparent"]}
-              style={styles.topFade}
-              pointerEvents="none"
-            />
+            console.log('Rendering top fade'),
+            null // Disable top fade for debugging
           )}
           {showBottomFade && (
-            <LinearGradient
-              colors={["transparent", "#211e1e"]}
-              style={styles.bottomFade}
-              pointerEvents="none"
-            />
+            console.log('Rendering bottom fade'),
+            null // Disable bottom fade for debugging
           )}
         </View>
 
@@ -228,10 +262,12 @@ const styles = StyleSheet.create({
     gap: 10
   },
   galleryView: {
-    paddingHorizontal: RFValue(5),
+    flex: 1,
+    paddingHorizontal: RFValue(10),
     paddingTop: RFValue(5),
-    height: RFPercentage(70),
-    marginBottom: RFValue(60),
+  },
+  galleryViewContent: {
+    paddingBottom: RFValue(120),
   },
   loadingContainer: {
     flex: 1,
@@ -277,7 +313,7 @@ const styles = StyleSheet.create({
   },
   bottomFade: {
     position: "absolute",
-    bottom: RFValue(60), 
+    bottom: RFValue(90),
     left: 0,
     right: 0,
     height: RFValue(30),

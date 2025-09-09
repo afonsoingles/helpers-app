@@ -1,5 +1,6 @@
 import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { unregisterPushDevice } from "./NotificationsManager";
 import axios from "axios";
 
 async function signIn(email, password) {
@@ -29,8 +30,9 @@ async function signIn(email, password) {
 
 async function logOff() {
   try {
-    AsyncStorage.removeItem('isLoggedIn');
-    AsyncStorage.removeItem('authToken');
+    await unregisterPushDevice();
+    await AsyncStorage.removeItem('isLoggedIn');
+    await AsyncStorage.removeItem('authToken');
   } catch (error) {
     console.error("[signIn] Unable to logoff: ", error.message);
     throw error;

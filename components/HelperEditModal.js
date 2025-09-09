@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import ScheduleSelector from './ScheduleSelector';
 
 const HelperEditModal = ({ visible, helper, onClose, onSave, isLoading }) => {
   const [editedParams, setEditedParams] = useState({});
-  const [editedSchedule, setEditedSchedule] = useState('');
+  const [editedSchedule, setEditedSchedule] = useState([]);
 
   useEffect(() => {
     if (helper && visible) {
       // Initialize with current values
       setEditedParams(helper.params || {});
-      setEditedSchedule(helper.schedule ? helper.schedule.join('\n') : '');
+      setEditedSchedule(helper.schedule || []);
     }
   }, [helper, visible]);
 
@@ -21,19 +22,13 @@ const HelperEditModal = ({ visible, helper, onClose, onSave, isLoading }) => {
     }));
   };
 
-  const handleScheduleChange = (text) => {
-    setEditedSchedule(text);
+  const handleScheduleChange = (scheduleArray) => {
+    setEditedSchedule(scheduleArray);
   };
 
   const handleSave = () => {
     if (onSave) {
-      // Convert schedule string to array
-      const scheduleArray = editedSchedule
-        .split('\n')
-        .map(s => s.trim())
-        .filter(s => s !== '');
-      
-      onSave(helper.id, editedParams, scheduleArray);
+      onSave(helper.id, editedParams, editedSchedule);
     }
   };
 
@@ -129,14 +124,9 @@ const HelperEditModal = ({ visible, helper, onClose, onSave, isLoading }) => {
             {/* Schedule Section */}
             {helper.allow_execution_time_config && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Schedule (CRON)</Text>
-                <TextInput
-                  style={styles.scheduleInput}
-                  value={editedSchedule}
-                  onChangeText={handleScheduleChange}
-                  multiline
-                  placeholder="Enter CRON expressions, one per line&#10;Examples:&#10;• 0 8 * * * (Every day at 8:00 AM)&#10;• 0 9 * * 3 (Every Wednesday at 9:00 AM)"
-                  placeholderTextColor="#888"
+                <ScheduleSelector
+                  onScheduleChange={handleScheduleChange}
+                  initialSchedule={editedSchedule}
                 />
               </View>
             )}
@@ -257,19 +247,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     borderWidth: 1,
     borderColor: '#555',
-  },
-  scheduleInput: {
-    backgroundColor: '#444',
-    borderRadius: RFValue(8),
-    paddingHorizontal: RFValue(12),
-    paddingVertical: RFValue(10),
-    fontSize: RFValue(14),
-    fontFamily: 'RedHatDisplay_400Regular',
-    color: '#fff',
-    borderWidth: 1,
-    borderColor: '#555',
-    minHeight: RFValue(100),
-    textAlignVertical: 'top',
   },
   noParamsText: {
     fontSize: RFValue(14),

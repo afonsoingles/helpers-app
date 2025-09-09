@@ -26,6 +26,7 @@ import {
 import NavigationBar from "../components/NavigationBar";
 import LinearGradient from "react-native-linear-gradient";
 import NotificationContainer from "../components/NotificationContainer";
+import NotificationDetailsModal from "../components/NotificationDetailsModal";
 import PushNotificationSetup from "../components/PushNotificationSetup";
 
 const Notifications = () => {
@@ -40,6 +41,8 @@ const Notifications = () => {
   const [isPushSetup, setIsPushSetup] = useState(false);
   const [checkInInterval, setCheckInInterval] = useState(null);
   const [isCheckingNotificationStatus, setIsCheckingNotificationStatus] = useState(true);
+  const [detailsVisible, setDetailsVisible] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
 
   const [fontsLoaded] = useFonts({
@@ -139,14 +142,18 @@ const Notifications = () => {
   const handleScroll = ({ nativeEvent }) => {
     const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
 
+    console.log('Scroll Debug:', {
+      layoutHeight: layoutMeasurement.height,
+      contentHeight: contentSize.height,
+      contentOffsetY: contentOffset.y,
+    });
+
     setShowTopFade(contentOffset.y > 0.1);
 
-    const isAtBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height;
-    setShowBottomFade(!isAtBottom);
-
-    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 50) {
-      fetchNotifications();
-    }
+    // Adjust fade logic to only show when content exceeds the screen size
+    const contentExceedsScreen = contentSize.height > layoutMeasurement.height;
+    const isAtBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 1; // Adjusted threshold
+    setShowBottomFade(contentExceedsScreen && !isAtBottom);
   };
 
   if (!fontsLoaded || !userData || !notificationStatus) return null;
@@ -192,6 +199,7 @@ const Notifications = () => {
         <View style={{ flex: 1 }}>
           <ScrollView
             style={styles.notificationView}
+            contentContainerStyle={styles.notificationViewContent}
             onScroll={handleScroll}
             scrollEventThrottle={16}
           >
@@ -206,6 +214,7 @@ const Notifications = () => {
                   title={notification.title}
                   body={notification.body}
                   critical={notification.isCritical}
+                  onEyePress={() => { setSelectedNotification(notification); setDetailsVisible(true); }}
                 />
               ))
             )}
@@ -218,20 +227,20 @@ const Notifications = () => {
 
           {/* Fades */}
           {showTopFade && (
-            <LinearGradient
-              colors={["#211e1e", "transparent"]}
-              style={styles.topFade}
-              pointerEvents="none"
-            />
+            console.log('Rendering top fade'),
+            null // Disable top fade for debugging
           )}
           {showBottomFade && (
-            <LinearGradient
-              colors={["transparent", "#211e1e"]}
-              style={styles.bottomFade}
-              pointerEvents="none"
-            />
+            console.log('Rendering bottom fade'),
+            null // Disable bottom fade for debugging
           )}
         </View>
+
+        <NotificationDetailsModal
+          visible={detailsVisible}
+          notification={selectedNotification}
+          onClose={() => setDetailsVisible(false)}
+        />
 
         <View style={[styles.AlignBottom, { paddingHorizontal: RFValue(20) }]}>
           <NavigationBar tab="notifications" userInfo={userData || null} />
@@ -252,10 +261,12 @@ const styles = StyleSheet.create({
     gap: 10
   },
   notificationView: {
+    flex: 1,
     paddingHorizontal: RFValue(5),
     paddingTop: RFValue(5),
-    height: RFPercentage(70),
-    marginBottom: RFValue(60),
+  },
+  notificationViewContent: {
+    paddingBottom: RFValue(120),
   },
   setupContainer: {
     flex: 1,
@@ -277,7 +288,7 @@ const styles = StyleSheet.create({
   },
   bottomFade: {
     position: "absolute",
-    bottom: RFValue(60), 
+    bottom: RFValue(90),
     left: 0,
     right: 0,
     height: RFValue(30),

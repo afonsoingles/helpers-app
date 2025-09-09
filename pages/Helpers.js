@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Alert
 } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import BackgroundWrapper from "../components/BackgroundWrapper";
 import HeaderBig from "../components/HeaderBig";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
@@ -66,6 +66,13 @@ const Helpers = () => {
   useEffect(() => {
     loadHelpers();
   }, []);
+
+  // Reload helpers when screen comes into focus (e.g., when returning from gallery)
+  useFocusEffect(
+    React.useCallback(() => {
+      loadHelpers();
+    }, [])
+  );
 
   const handleToggleHelper = async (helperId, enabled) => {
     // Set loading state for this specific helper
@@ -182,8 +189,10 @@ const Helpers = () => {
 
     setShowTopFade(contentOffset.y > 0.1);
 
+    // Adjust fade logic to only show when content exceeds the screen size
+    const contentExceedsScreen = contentSize.height > layoutMeasurement.height;
     const isAtBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height;
-    setShowBottomFade(!isAtBottom);
+    setShowBottomFade(contentExceedsScreen && !isAtBottom);
   };
 
   if (!fontsLoaded || !userData) return null;
@@ -196,6 +205,7 @@ const Helpers = () => {
         <View style={{ flex: 1 }}>
           <ScrollView
             style={styles.helpersView}
+            contentContainerStyle={styles.helpersViewContent}
             onScroll={handleScroll}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
@@ -248,18 +258,12 @@ const Helpers = () => {
 
           {/* Fades */}
           {showTopFade && (
-            <LinearGradient
-              colors={["#211e1e", "transparent"]}
-              style={styles.topFade}
-              pointerEvents="none"
-            />
+            console.log('Rendering top fade'),
+            null // Disable top fade for debugging
           )}
           {showBottomFade && (
-            <LinearGradient
-              colors={["transparent", "#211e1e"]}
-              style={styles.bottomFade}
-              pointerEvents="none"
-            />
+            console.log('Rendering bottom fade'),
+            null // Disable bottom fade for debugging
           )}
         </View>
 
@@ -282,10 +286,12 @@ const styles = StyleSheet.create({
     gap: 10
   },
   helpersView: {
+    flex: 1,
     paddingHorizontal: RFValue(5),
     paddingTop: RFValue(5),
-    height: RFPercentage(70),
-    marginBottom: RFValue(60),
+  },
+  helpersViewContent: {
+    paddingBottom: RFValue(120), // keep content clear of the bottom bar
   },
   helpersList: {
     paddingBottom: RFValue(20),
@@ -349,7 +355,7 @@ const styles = StyleSheet.create({
   },
   bottomFade: {
     position: "absolute",
-    bottom: RFValue(60), 
+    bottom: RFValue(90),
     left: 0,
     right: 0,
     height: RFValue(30),

@@ -5,7 +5,6 @@ import { API_URL } from '@env';
 import { Platform } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from 'expo-device';
-import { getAccountData } from './AuthManager';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,6 +12,8 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
+    shouldAllowAnnouncement: true,
+
   }),
 });
 
@@ -31,6 +32,8 @@ async function setupPushConfig() {
     sound: 'default',
     vibrationPattern: [0, 250, 250, 250],
     enableVibrate: true,
+    showBadge: true,
+    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
   });
 
   Notifications.setNotificationChannelAsync('critical', {
@@ -50,7 +53,9 @@ async function setupPushConfig() {
         enforceAudibility: true,
       },
     },
+    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
 
+    
   });
 
   const pushToken = await Notifications.getExpoPushTokenAsync();
@@ -75,6 +80,7 @@ async function setupPushConfig() {
     if (error.response?.data?.type === 'duplicate_device') {
       console.log("Device already registered, fetching device ID from account data");
       // Device already exists, get the device ID from user's account data
+      const { getAccountData } = await import('./AuthManager');
       const userData = await getAccountData();
       const pushConfiguration = userData?.pushConfiguration || [];
       
@@ -199,6 +205,7 @@ async function getNotificationDeviceStatus() {
     return "tokenMismatch";
   }
 
+  const { getAccountData } = await import('./AuthManager');
   const userData = await getAccountData();
 
   const pushConfiguration = userData?.pushConfiguration || [];
@@ -261,6 +268,27 @@ async function requestPushPermissions() {
   }
 }
 
+// Unregister the current device from server and clear local storage
+async function unregisterPushDevice() {
+  try {
+    const authToken = await AsyncStorage.getItem('authToken');
+    const deviceId = await AsyncStorage.getItem('notificationDeviceId');
+    if (authToken && deviceId) {
+      try {
+        await axios.delete(`${API_URL}/v2/notifications/devices/${deviceId}`, {
+          headers: { authorization: `Bearer ${authToken}` }
+        });
+      } catch (err) {
+        console.log('unregisterPushDevice error:', err?.response?.data || err.message);
+      }
+    }
+  } finally {
+    AsyncStorage.removeItem('notificationDeviceId');
+    AsyncStorage.removeItem('notificationDeviceToken');
+    AsyncStorage.removeItem('notificationDeviceStatus');
+  }
+}
+
 export { 
   setupPushConfig, 
   loadUserNotifications, 
@@ -268,5 +296,6 @@ export {
   updatePushConfig, 
   registerToken,
   checkInDevice,
-  requestPushPermissions
+  requestPushPermissions,
+  unregisterPushDevice
 };

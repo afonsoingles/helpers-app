@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import ScheduleSelector from './ScheduleSelector';
 
-const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoading }) => {
+const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoading, isInstalling }) => {
   const [editedParams, setEditedParams] = useState({});
-  const [editedSchedule, setEditedSchedule] = useState('');
+  const [editedSchedule, setEditedSchedule] = useState([]);
+  const [isActivated, setIsActivated] = useState(false);
 
   useEffect(() => {
     if (helper && visible) {
@@ -27,9 +29,22 @@ const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoad
         });
       }
       setEditedParams(defaultParams);
-      setEditedSchedule('');
+      setEditedSchedule([]);
+      setIsActivated(false);
     }
   }, [helper, visible]);
+
+  // Show activation success when installation completes
+  useEffect(() => {
+    if (isInstalling === false && editedParams && Object.keys(editedParams).length > 0) {
+      setIsActivated(true);
+      // Auto close after 2 seconds
+      setTimeout(() => {
+        setIsActivated(false);
+        onClose();
+      }, 2000);
+    }
+  }, [isInstalling]);
 
   const handleParamChange = (paramName, value) => {
     setEditedParams(prev => ({
@@ -38,19 +53,13 @@ const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoad
     }));
   };
 
-  const handleScheduleChange = (text) => {
-    setEditedSchedule(text);
+  const handleScheduleChange = (scheduleArray) => {
+    setEditedSchedule(scheduleArray);
   };
 
   const handleInstall = () => {
     if (onInstall) {
-      // Convert schedule string to array
-      const scheduleArray = editedSchedule
-        .split('\n')
-        .map(s => s.trim())
-        .filter(s => s !== '');
-      
-      onInstall(editedParams, scheduleArray);
+      onInstall(editedParams, editedSchedule);
     }
   };
 
@@ -101,6 +110,32 @@ const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoad
 
   if (!helper) return null;
 
+  // Show activation success screen
+  if (isActivated) {
+    return (
+      <Modal
+        visible={visible}
+        transparent={true}
+        animationType="none"
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.activationContainer}>
+            <Image 
+              source={require('../assets/icons/check.png')} 
+              style={styles.checkIcon}
+              resizeMode="contain"
+            />
+            <Text style={styles.activationTitle}>Activated!</Text>
+            <Text style={styles.activationSubtitle}>
+              {helper.name || helper.id} has been successfully activated
+            </Text>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
   return (
     <Modal
       visible={visible}
@@ -111,7 +146,7 @@ const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoad
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Install {helper.name || helper.id}</Text>
+            <Text style={styles.modalTitle}>Activate {helper.name || helper.id}</Text>
             <TouchableOpacity 
               style={styles.closeButton}
               onPress={onClose}
@@ -152,14 +187,9 @@ const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoad
             {/* Schedule Section */}
             {helper.allow_execution_time_config && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Schedule (CRON)</Text>
-                <TextInput
-                  style={styles.scheduleInput}
-                  value={editedSchedule}
-                  onChangeText={handleScheduleChange}
-                  multiline
-                  placeholder="Enter CRON expressions, one per line&#10;Examples:&#10;• 0 8 * * * (Every day at 8:00 AM)&#10;• 0 9 * * 3 (Every Wednesday at 9:00 AM)"
-                  placeholderTextColor="#888"
+                <ScheduleSelector
+                  onScheduleChange={handleScheduleChange}
+                  initialSchedule={editedSchedule}
                 />
               </View>
             )}
@@ -178,19 +208,19 @@ const GalleryHelperInstallModal = ({ visible, helper, onClose, onInstall, isLoad
             <TouchableOpacity
               style={styles.cancelButton}
               onPress={onClose}
-              disabled={isLoading}
+              disabled={isInstalling}
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.installButton}
               onPress={handleInstall}
-              disabled={isLoading}
+              disabled={isInstalling}
             >
-              {isLoading ? (
+              {isInstalling ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={styles.installButtonText}>Install Helper</Text>
+                <Text style={styles.installButtonText}>Activate Helper</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -208,11 +238,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: RFValue(20),
   },
+  activationContainer: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: RFValue(16),
+    padding: RFValue(40),
+    alignItems: 'center',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    minWidth: RFValue(280),
+  },
+  checkIcon: {
+    width: RFValue(60),
+    height: RFValue(60),
+    marginBottom: RFValue(20),
+  },
+  activationTitle: {
+    fontSize: RFValue(24),
+    fontFamily: 'RedHatDisplay_700Bold',
+    color: '#4CAF50',
+    marginBottom: RFValue(8),
+  },
+  activationSubtitle: {
+    fontSize: RFValue(16),
+    fontFamily: 'RedHatDisplay_400Regular',
+    color: '#ccc',
+    textAlign: 'center',
+    lineHeight: RFValue(22),
+  },
   modalContainer: {
     backgroundColor: '#2a2a2a',
     borderRadius: RFValue(16),
-    width: '100%',
-    height: '85%',
+    width: '92%',
+    maxWidth: RFValue(520),
+    height: '75%',
+    alignSelf: 'center',
     elevation: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -294,19 +356,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     borderWidth: 1,
     borderColor: '#555',
-  },
-  scheduleInput: {
-    backgroundColor: '#444',
-    borderRadius: RFValue(8),
-    paddingHorizontal: RFValue(12),
-    paddingVertical: RFValue(10),
-    fontSize: RFValue(14),
-    fontFamily: 'RedHatDisplay_400Regular',
-    color: '#fff',
-    borderWidth: 1,
-    borderColor: '#555',
-    minHeight: RFValue(100),
-    textAlignVertical: 'top',
   },
   warningSection: {
     backgroundColor: '#FF9800',
