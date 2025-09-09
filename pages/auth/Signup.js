@@ -77,9 +77,9 @@ const SignupScreen = () => {
       <HeaderBig subtitle="Signup" />
       <View>
         <View style={styles.inputContainers}>
-          <InputBox placeholder='Display name' icon={require('../../assets/icons/bell.png')} onChangeText={(text) => setDisplayNameInput(text)} />
+          <InputBox placeholder='Display name' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setDisplayNameInput(text)} />
           <InputBox placeholder='Username' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setNameInput(text)} />
-          <InputBox placeholder='Email' icon={require('../../assets/icons/user.png')} onChangeText={(text) => setEmailInput(text)} />
+          <InputBox placeholder='Email' icon={require('../../assets/icons/email.png')} onChangeText={(text) => setEmailInput(text)} />
           <InputBox placeholder='Password' icon={require('../../assets/icons/key.png')} isPassword={true} onChangeText={(text) => setPasswordInput(text)} />
         </View>
         <View style={styles.submitButton}>
